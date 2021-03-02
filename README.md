@@ -1,7 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Preparation
+Preparation
+===========
 
 -   Create [GitHub](https://github.com),
     [docker](https://www.docker.com) and
@@ -17,24 +18,28 @@
 -   Create a new Docker Hub repositories:
     <https://docs.docker.com/docker-hub/repos/>
 
-# Initial Setup
+Initial Setup
+=============
 
-## Remote Public and Private Repository on GitHub
+Remote Public and Private Repository on GitHub
+----------------------------------------------
 
-Create two new repository on GitHub, instructions can be found
+Create two new repositories on GitHub, instructions can be found
 [here](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-new-repository).
-One repository will be open to students, which is the so-called public
+One repository will be open to students, which is a so-called public
 repository (`public-repo`), whereas the other will be used for
 development and testing (including solutions, shared with TAs etc.),
-which is the so-called private repository (`private-repo`).
+which is a so-called private repository (`private-repo`).
 
 Suppose that
 
--   `public-repo` is at `https://github.com/username/public-repo.git`.
+-   `public-repo` is at `https://github.com/[username]/public-repo.git`.
 
--   `private-repo` is at `https://github.com/username/private-repo.git`.
+-   `private-repo` is at
+    `https://github.com/[username]/private-repo.git`.
 
-## Create Local Repository and Connect with Remote Repos
+Create Local Repository and Connect with Remote Repos
+-----------------------------------------------------
 
     # create local repository #
     mkdir ~/local-repo
@@ -54,8 +59,8 @@ Add first file:
     git add README.md
     git commit -m "first commit"
 
-We can change the default branch name (`master`) of `public-repo` and
-`private-repo` so that the two `master` branches will not be confusing.
+To avoid confusion, we set the default branch name (`master`) of
+`public-repo` to (`public`).
 
     # rename the master branch of public-repo to public #
     git branch -M public
@@ -71,7 +76,8 @@ repository `private-repo`；
 Now, `public-repo/public` and `private-repo/private` on GitHub are
 identical.
 
-## Build Docker Images
+Build Docker Images
+-------------------
 
 ### Create Docker Images
 
@@ -83,6 +89,24 @@ GitHub:
 -   `~/work/.github/workflows/build-assignment.yml`
 
 -   `~/work/Dockerfile`
+
+**Remark**: `build-assignment.yml` uses token to get access to the
+GitHub repositories, instructions for create a personal access token can
+be found
+[here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+
+Before adding these files to the private repository, parts underlined
+with a red line must be updated accordingly.
+
+For `build-assignment.yml`,
+
+![Docker Image Serial Number](images/build-assignment-update-1.png)
+
+![Docker Image Serial Number](images/build-assignment-update-2.png)
+
+For `build-docker.yml`,
+
+![Docker Image Serial Number](images/build-docker-update.png)
 
 The `build-docker.yml` is written in a way that it is looking for a
 specific branch named “docker”, which will trigger a job for building a
@@ -96,17 +120,12 @@ image on GitHub. So, we create a new branch name `docker` exactly.
 
     git checkout -b docker ## create a new branch named 'docker' and switch to the branch
     # push to remote repository private-repo branch docker, tracking changes of local branch docker #
-    git push -u private-repo docker
-
-**Remark**: `build-assignment.yml` uses token to get access to the
-GitHub repositories, instructions for create a personal access token can
-be found
-[here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+    git push -u private-repo docker ## this will kick off an action!
 
 ### Tag Docker Images
 
 When a docker image is ready to release, we can tag it for more stable
-development This will create a release page:
+development. This will create a release page:
 
     git tag -a v0.0.1 -m "first release" ## tag annotated as v0.0.1
     git push --tags  ## push tag, make a release
@@ -161,7 +180,7 @@ docker image can be find on the page similar to: ![Docker Image Serial
 Number](images/docker_serial_number.png) Replacing
 `***/otter-grader:...` to `your-dockerhub-id/otter-grader:...`.
 
-#### Publsh Student’s Content to Public Repository (`public-repo`)
+#### Publish Student’s Content to Public Repository (`public-repo`)
 
 Do not `merge` or `add` but `checkout` relevant files to
 `public-repo/public`
