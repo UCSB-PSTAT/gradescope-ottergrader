@@ -1,0 +1,88 @@
+name: Build grader image
+
+on:
+  push:
+    branches:
+      - 'assignment/**'
+      - 'lab/**'
+
+jobs:
+
+  build-grader:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set env
+        run: |
+          echo ::set-env name=IMAGE::{{ cookiecutter.dockerhub_repo }}
+          echo ::set-env name=BRANCH::$( echo ${GITHUB_REF} | cut -d/ -f3- )
+          echo ::set-env name=TYPE::$( echo ${GITHUB_REF} | cut -d/ -f3 )
+          echo ::set-env name=NUM::$( echo ${GITHUB_REF} | cut -d/ -f4 )
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+      - name: Set grader image tag
+        run: |
+          echo ::set-env name=TAG::${TYPE::2}${NUM}-${GITHUB_SHA::7}
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Latest environment.yml
+        uses: dsaltares/fetch-gh-release-asset@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo: "{{ cookiecutter.github_repo }}"
+          version: "latest"
+          file: "environment.yml"
+          token: "{{ cookiecutter.github_personal_access_token }}"
+
+      - run: |
+          sudo apt-get update && sudo apt-get install -y zip unzip
+          echo "${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip"
+          grep impl environment.yml
+          zip ${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip environment.yml
+
+      - name: Gradescope Dockerfile
+        run: |
+          mkdir -p build
+          cat << EOF > build/Dockerfile
+          FROM gradescope/auto-builds:ubuntu-20.04
+
+          RUN apt-get update && \
+              apt-get install -y curl unzip dos2unix && \
+              apt-get clean && \
+              rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+          RUN mkdir -p /autograder/source
+
+          COPY ${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip /tmp/autograder.zip
+
+          RUN unzip -d /autograder/source /tmp/autograder.zip
+
+          RUN cp /autograder/source/run_autograder /autograder/run_autograder
+
+          RUN dos2unix /autograder/run_autograder /autograder/source/setup.sh
+
+          RUN chmod +x /autograder/run_autograder
+
+          RUN apt-get update && \
+              bash /autograder/source/setup.sh && \
+              apt-get clean && \
+              rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+          EOF
+
+      - name: Build Gradescope image
+        uses: docker/build-push-action@v1.1.0
+        with:
+          dockerfile: build/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ${{ env.IMAGE}}
+          tags: ${{ env.TAG }}
+
+      - name: Grader Docker image
+        run: |
+          echo "Grader image: ${IMAGE}:${TAG}"

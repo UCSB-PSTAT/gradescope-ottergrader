@@ -1,0 +1,12 @@
+{
+  "class": "PSTAT-000",
+  "term": "Fall-2021",
+  "project_slug": "{{ cookiecutter.class | slugify }}-{{ cookiecutter.term | slugify }}",
+  "github_username": "you",
+  "github_repo": "{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}",
+  "github_personal_access_token": "",
+  "dockerhub_username": "you",
+  "dockerhub_repo": "{{ cookiecutter.dockerhub_username }}/{{ cookiecutter.project_slug }}",
+  "base_jupyter_notebook_image": "jupyter/scipy-notebook:aec555e49be6",
+  "jupyter_notebook_port": "443"
+}
