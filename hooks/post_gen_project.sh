@@ -7,7 +7,7 @@ OS={{ cookiecutter.current_os }}
 if [[ ! $(command -v gh) ]]
 then
 
-    echo $"\n## try to install github cli"
+    echo -en "\n## try to install github cli"
     if [[ $OS -eq "Debian" ]]
     then
 
@@ -31,7 +31,7 @@ then
 
         else
 
-            echo $"\nbrew or macports not found"
+            echo -en "\nbrew or macports not found"
 
         fi
 
@@ -47,12 +47,12 @@ then
     ## bypass this by creating a dummy repo without origin
     ## then delete the dummy repo
 
-    echo $"\n## create public repo on GitHub"
+    echo -en "\n## create public repo on GitHub"
     git init
     gh repo create {{ cookiecutter.github_public_repo }} -y --public --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
     rm -rf .git
 
-    echo $"\n## create private repo on GitHub"
+    echo -en "\n## create private repo on GitHub"
     git init
     gh repo create {{ cookiecutter.github_private_repo }} -y --private --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
     rm -rf .git
@@ -63,7 +63,7 @@ fi
 if [[ $(command -v git) ]]
 then
 
-    echo $"\n## create dual repostiory structure"
+    echo -en "\n## create dual repostiory structure"
     echo "initialize git repository"
     git init
 
