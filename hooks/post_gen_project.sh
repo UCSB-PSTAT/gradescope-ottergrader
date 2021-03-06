@@ -7,7 +7,7 @@ OS={{ cookiecutter.current_os }}
 if [[ ! $(command -v gh) ]]
 then
 
-    echo -en "\n## try to install github cli"
+    echo -en "\n## try to install github cli\n"
     if [[ $OS -eq "Debian" ]]
     then
 
@@ -31,7 +31,7 @@ then
 
         else
 
-            echo -en "\nbrew or macports not found"
+            echo -en "\nbrew or macports not found\n"
 
         fi
 
@@ -47,13 +47,13 @@ then
     ## bypass this by creating a dummy repo without origin
     ## then delete the dummy repo
 
-    echo -en "\n## create public repo on GitHub"
-    git init
+    echo -en "\n## create public repo on GitHub\n"
+    git init &>/dev/null
     gh repo create {{ cookiecutter.github_public_repo }} -y --public --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
     rm -rf .git
 
-    echo -en "\n## create private repo on GitHub"
-    git init
+    echo -en "\n## create private repo on GitHub\n"
+    git init &>/dev/null 
     gh repo create {{ cookiecutter.github_private_repo }} -y --private --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
     rm -rf .git
 
@@ -63,22 +63,22 @@ fi
 if [[ $(command -v git) ]]
 then
 
-    echo -en "\n## create dual repostiory structure"
-    echo "initialize git repository"
+    echo -en "\n## create dual repostiory structure\n"
+    echo -en "\ninitialize git repository\n"
     git init
 
-    echo "add public/private reomotes"
+    echo -en "\nadd public/private reomotes\n"
     git remote add public-repo https://github.com/{{ cookiecutter.github_public_repo }}.git
     git remote add private-repo https://github.com/{{ cookiecutter.github_private_repo }}.git
 
-    echo "create/push public repository structure"
+    echo -en "\ncreate/push public repository structure\n"
     echo "# {{ cookiecutter.class }} ({{ cookiecutter.term }})" >> README.md
     git add README.md
     git commit -m "first commit"
     git branch -M public
     git push -u public-repo public
 
-    echo "create/push private repository structure"
+    echo -en "\ncreate/push private repository structure\n"
     git checkout -b private
     git push -u private-repo private
 
