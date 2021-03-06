@@ -1,7 +1,7 @@
 .PHONY: help build start stop test test-env
 
 # Docker image name and tag
-IMAGE:={{ cookiecutter.github_repo }}
+IMAGE:={{ cookiecutter.dockerhub_repo }}
 TAG?=latest
 # Shell that make should use
 SHELL:=bash
