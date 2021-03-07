@@ -2,63 +2,6 @@
 
 set -e
 
-OS={{ cookiecutter.current_os }}
-
-if [[ ! $(command -v gh) ]]
-then
-
-    echo -en "\n## try to install github cli\n"
-    if [[ $OS -eq "Debian" ]]
-    then
-
-        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-        sudo apt-add-repository https://cli.github.com/packages
-        sudo apt update
-        sudo apt install -y gh
-
-    elif [[ $OS -eq "macOS" ]]
-    then
-
-        if [[ $(command -v brew) ]]
-        then
-
-            brew install gh
-
-        elif [[ $(command -v port) ]]
-        then
-
-            sudo port install gh
-
-        else
-
-            echo -en "\nbrew or macports not found\n"
-
-        fi
-
-    fi
-fi
-
-# try to create repositories
-if [[ $(command -v gh) ]]
-then
-
-    ## gh repo create will fail if origin exists
-    ## i.e. if subdirectory of another git repository
-    ## bypass this by creating a dummy repo without origin
-    ## then delete the dummy repo
-
-    echo -en "\n## create public repo on GitHub\n"
-    git init &>/dev/null
-    gh repo create {{ cookiecutter.github_public_repo }} -y --public --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
-    rm -rf .git
-
-    echo -en "\n## create private repo on GitHub\n"
-    git init &>/dev/null 
-    gh repo create {{ cookiecutter.github_private_repo }} -y --private --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
-    rm -rf .git
-
-fi
-
 # create dual repository structure 
 if [[ $(command -v git) ]]
 then
@@ -76,10 +19,14 @@ then
     git add README.md
     git commit -m "first commit"
     git branch -M public
-    git push -u public-repo public
 
     echo -en "\ncreate/push private repository structure\n"
     git checkout -b private
-    git push -u private-repo private
+
+    echo -en "\ncommands to push to github\n\n"
+    echo -en "\n  git checkout public\n"
+    echo -en "\n  git push -u public-repo public\n"
+    echo -en "\n  git checkout private\n"
+    echo -en "\n  git push -u private-repo private\n"
 
 fi
