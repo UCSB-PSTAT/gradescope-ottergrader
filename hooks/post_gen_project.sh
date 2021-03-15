@@ -2,42 +2,6 @@
 
 set -e
 
-OS={{ cookiecutter.current_os }}
-
-if [[ ! $(command -v gh) ]]
-then
-
-    echo -en "\n## try to install github cli\n"
-    if [[ $OS -eq "Debian" ]]
-    then
-
-        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-        sudo apt-add-repository https://cli.github.com/packages
-        sudo apt update
-        sudo apt install -y gh
-
-    elif [[ $OS -eq "macOS" ]]
-    then
-
-        if [[ $(command -v brew) ]]
-        then
-
-            brew install gh
-
-        elif [[ $(command -v port) ]]
-        then
-
-            sudo port install gh
-
-        else
-
-            echo -en "\nbrew or macports not found\n"
-
-        fi
-
-    fi
-fi
-
 # try to create repositories
 if [[ $(command -v gh) ]]
 then
