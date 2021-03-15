@@ -6,6 +6,8 @@ on:
       - docker
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+env:
+  GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
 
 jobs:
 
@@ -13,45 +15,51 @@ jobs:
 
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
 
-      - name: Build notebook image
-        uses: docker/build-push-action@v1.1.0
+      - name: Set image name (1)
+        run: |
+          echo "image_name=syoh/local-jupyter-server" >> $GITHUB_ENV
+          echo "short_sha=$( echo ${{ github.sha }} | cut -c1-7 )" >> $GITHUB_ENV
+
+      - name: Set image name (2)
+        run: |
+          echo "full_tag=${{ env.image_name }}:${{ env.short_sha }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+
+      - uses: docker/login-action@v1
         with:
           username: {{ "${{ secrets.DOCKER_USERNAME }}" }}
           password: {{ "${{ secrets.DOCKER_PASSWORD }}" }}
-          repository: {{ cookiecutter.dockerhub_repo }}
-          tag_with_sha: true
-      
-      - name: Generate conda package lists
-        run: |
-          docker run -i --rm {{ cookiecutter.dockerhub_repo }}:sha-${GITHUB_SHA::7} bash -c 'conda list --explicit'    > requirement.txt
-          docker run -i --rm {{ cookiecutter.dockerhub_repo }}:sha-${GITHUB_SHA::7} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-env/' | grep -v '^prefix\|gcc_impl\|gxx_impl' > environment.yml
 
-      - name: Upload conda package lists
-        uses: actions/upload-artifact@v2
+      - uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: {{ "${{ env.full_tag }}" }}
+
+      - name: Export conda environment for building Gradescope image
+        run: |
+          docker run -i --rm ${{ env.full_tag }} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-env/' | grep -v '^prefix\|gcc_impl\|gxx_impl' > environment.yml
+
+      - uses: actions/upload-artifact@v2
         with:
           name: conda-package-lists
-          path: |
-            requirement.txt
-            environment.yml
+          path: environment.yml
 
   create-release:
-    # https://github.com/actions/upload-release-asset
-    name: Create Release
-    runs-on: ubuntu-20.04
-    needs: build-notebook-image
-    if: {{ "${{ contains(github.ref, 'tags/v') }}" }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
 
-      - name: Create Release
+    needs: build-notebook-image
+    if: ${{ contains(github.ref, 'tags/v') }}
+    runs-on: ubuntu-20.04
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/create-release@v1
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }} # This token is provided by Actions, you do not need to create your own token
         with:
           tag_name: {{ "${{ github.ref }}" }}
           release_name: Release {{ "${{ github.ref }}" }}
@@ -61,29 +69,14 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Download conda package lists
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with:
           name: conda-package-lists
 
-      - name: Upload environment.yml
-        id: upload-environment-yml
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
+      - uses: actions/upload-release-asset@v1
         with:
           upload_url: {{ "${{ steps.create_release.outputs.upload_url }}" }}
           asset_path: ./environment.yml
           asset_name: environment.yml
           asset_content_type: text/plain
 
-      - name: Upload requirement.txt
-        id: upload-requirement-txt
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
-        with:
-          upload_url: {{ "${{ steps.create_release.outputs.upload_url }}" }}
-          asset_path: ./requirement.txt
-          asset_name: requirement.txt
-          asset_content_type: text/plain

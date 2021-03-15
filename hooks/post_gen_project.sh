@@ -82,4 +82,12 @@ then
     git checkout -b private
     git push -u private-repo private
 
+    # stty -echo
+    # printf "Password: "
+    # read PASSWORD
+    # stty echo
+    # printf "\n"
+
+    # gh secret set DOCKER_PASSWORD -b'asdfasdf'
+
 fi
