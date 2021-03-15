@@ -17,7 +17,7 @@ build: ## Make the latest build of the image
 	docker build $(DARGS) --rm --force-rm -t $(IMAGE):$(TAG) .
 
 start: ARGS?=-d
-start: PORT?={{ cookiecutter.jupyter_notebook_port }}
+start: PORT?=443
 start: 
 	IMAGE=$(IMAGE) PORT=$(PORT) docker-compose up $(ARGS)
 
