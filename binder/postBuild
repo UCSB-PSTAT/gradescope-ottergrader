@@ -1,14 +1,9 @@
  #!/bin/bash
  
 set -ex
-apt-get update && apt-get install -y gpg
 
-apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-apt-add-repository https://cli.github.com/packages
-apt update
-apt install -y gh
-
-jupyter lab clean
-jupyter lab workspaces import binder/workspace.json
+wget https://github.com/cli/cli/releases/download/v1.7.0/gh_1.7.0_linux_amd64.tar.gz && \
+    tar xvzf gh_1.7.0_linux_amd64.tar.gz && \
+    export PATH=~/gh_1.7.0_linux_amd64/bin:$PATH
 
 echo "done!"
