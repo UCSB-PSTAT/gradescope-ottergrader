@@ -46,7 +46,10 @@ then
     ## i.e. if subdirectory of another git repository
     ## bypass this by creating a dummy repo without origin
     ## then delete the dummy repo
-
+    
+    echo -en "\n## log in to github\n"
+    gh auth login
+    
     echo -en "\n## create public repo on GitHub\n"
     git init &>/dev/null
     gh repo create {{ cookiecutter.github_public_repo }} -y --public --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
