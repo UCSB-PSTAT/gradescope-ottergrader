@@ -7,5 +7,5 @@
   "github_private_repo": "{{ cookiecutter.github_public_repo}}-private",
   "dockerhub_username": "you",
   "dockerhub_repo": "{{ cookiecutter.dockerhub_username }}/{{ cookiecutter.project_slug | lower }}",
-  "base_jupyter_notebook_image": "jupyter/scipy-notebook:aec555e49be6",
+  "base_jupyter_notebook_image": "jupyter/scipy-notebook:aec555e49be6"
 }
