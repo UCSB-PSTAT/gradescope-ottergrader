@@ -1,4 +1,6 @@
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/UCSB-PSTAT/gradescope-ottergrader.git/cc-gh?urlpath=lab)
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # Preparation
