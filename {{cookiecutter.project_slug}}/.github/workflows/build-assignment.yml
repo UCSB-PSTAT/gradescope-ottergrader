@@ -7,7 +7,7 @@ on:
       - 'lab/**'
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
 
 jobs:
 
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - run: |
-          echo "IMAGE=syoh/pstat-000-fall-2021" >> $GITHUB_ENV
+          echo "IMAGE={{ cookiecutter.dockerhub_repo }}" >> $GITHUB_ENV
           echo "BRANCH=$( echo ${GITHUB_REF} | cut -d/ -f3- )" >> $GITHUB_ENV
           echo "TYPE=$( echo ${GITHUB_REF} | cut -d/ -f3 )" >> $GITHUB_ENV
           echo "NUM=$( echo ${GITHUB_REF} | cut -d/ -f4 )" >> $GITHUB_ENV
