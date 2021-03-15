@@ -19,11 +19,11 @@ jobs:
       - name: Set image name (1)
         run: |
           echo "image_name=syoh/local-jupyter-server" >> $GITHUB_ENV
-          echo "short_sha=$( echo ${{ github.sha }} | cut -c1-7 )" >> $GITHUB_ENV
+          echo 'short_sha=$( echo {{ "${{ github.sha }}" }} | cut -c1-7 )' >> $GITHUB_ENV
 
       - name: Set image name (2)
         run: |
-          echo "full_tag=${{ env.image_name }}:${{ env.short_sha }}" >> $GITHUB_ENV
+          echo 'full_tag={{ "${{ env.image_name }}:${{ env.short_sha }}" }}' >> $GITHUB_ENV
 
       - uses: actions/checkout@v2
 
@@ -42,7 +42,7 @@ jobs:
 
       - name: Export conda environment for building Gradescope image
         run: |
-          docker run -i --rm ${{ env.full_tag }} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-env/' | grep -v '^prefix\|gcc_impl\|gxx_impl' > environment.yml
+          docker run -i --rm {{ "${{ env.full_tag }}" }} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-env/' | grep -v '^prefix\|gcc_impl\|gxx_impl' > environment.yml
 
       - uses: actions/upload-artifact@v2
         with:
@@ -52,7 +52,7 @@ jobs:
   create-release:
 
     needs: build-notebook-image
-    if: ${{ contains(github.ref, 'tags/v') }}
+    if: {{ "${{ contains(github.ref, 'tags/v') }}" }}
     runs-on: ubuntu-20.04
     steps:
 
@@ -79,4 +79,3 @@ jobs:
           asset_path: ./environment.yml
           asset_name: environment.yml
           asset_content_type: text/plain
-
