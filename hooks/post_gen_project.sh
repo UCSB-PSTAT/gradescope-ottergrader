@@ -36,10 +36,6 @@ then
     stty echo
     printf "\n"
 
-    gh secret set MY_GITHUB_TOKEN -b"${MY_GITHUB_TOKEN}"
-    gh secret set DOCKER_USERNAME -b"{{ cookiecutter.dockerhub_username }}"
-    gh secret set DOCKER_PASSWORD -b"${DOCKERHUB_ACCESS_TOKEN}"
-
 fi
 
 # create dual repository structure 
@@ -64,6 +60,10 @@ then
     echo -en "\ncreate/push private repository structure\n"
     git checkout -b private
     git push -u private-repo private
+
+    gh secret set MY_GITHUB_TOKEN -b"${MY_GITHUB_TOKEN}"
+    gh secret set DOCKER_USERNAME -b"{{ cookiecutter.dockerhub_username }}"
+    gh secret set DOCKER_PASSWORD -b"${DOCKERHUB_ACCESS_TOKEN}"
 
     # stty -echo
     # printf "Password: "
