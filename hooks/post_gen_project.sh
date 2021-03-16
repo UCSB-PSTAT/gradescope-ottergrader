@@ -11,8 +11,16 @@ echo -en "\n## log in to github\n"
 gh auth login
 
 echo -en "\n## set git user information\n"
-git config --global user.email "{{ cookiecutter.github_email }}"
-git config --global user.name "{{ cookiecutter.github_fullname }}"
+printf "Enter a name for 'git config': "
+read GITHUB_NAME
+echo "GH NAME: ${GITHUB_NAME}"
+printf "Enter a email for 'git config': "
+read GITHUB_EMAIL
+echo "GH EMAIL: ${GITHUB_EMAIL}"
+
+
+git config --global user.email "${GITHUB_EMAIL}"
+git config --global user.name "${GITHUB_NAME}"
 
 echo -en "\n## create public repo on GitHub\n"
 git init &>/dev/null
@@ -74,6 +82,7 @@ gh secret set GRADER_PASSWORD -b"${GRADER_ACCESS_TOKEN}"
 
 echo -en "\npushing grader files to private\n"
 git add .
+git commit -m"initial grader files"
 git push -u private-repo private
 
 echo -en "\npushing again to docker builds notebook docker image)\n"
