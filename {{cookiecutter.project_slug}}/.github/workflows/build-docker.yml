@@ -18,12 +18,13 @@ jobs:
 
       - name: Set image name (1)
         run: |
-          echo "image_name=syoh/local-jupyter-server" >> $GITHUB_ENV
-          echo 'short_sha=$( echo {{ "${{ github.sha }}" }} | cut -c1-7 )' >> $GITHUB_ENV
+          echo "image_name={{ cookiecutter.dockerhub_repo }}" >> $GITHUB_ENV
+          echo "$( echo {{ '${{ github.sha }}' }} | cut -c1-7 )"
+          echo "short_sha=$( echo {{ '${{ github.sha }}' }} | cut -c1-7 )" >> $GITHUB_ENV
 
       - name: Set image name (2)
         run: |
-          echo 'full_tag={{ "${{ env.image_name }}:${{ env.short_sha }}" }}' >> $GITHUB_ENV
+          echo "full_tag={{ '${{ env.image_name }}:${{ env.short_sha }}' }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v2
 

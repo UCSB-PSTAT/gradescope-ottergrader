@@ -2,75 +2,77 @@
 
 set -e
 
-# try to create repositories
-if [[ $(command -v gh) ]]
-then
+## gh repo create will fail if origin exists
+## i.e. if subdirectory of another git repository
+## bypass this by creating a dummy repo without origin
+## then delete the dummy repo
 
-    ## gh repo create will fail if origin exists
-    ## i.e. if subdirectory of another git repository
-    ## bypass this by creating a dummy repo without origin
-    ## then delete the dummy repo
-    
-    echo -en "\n## log in to github\n"
-    gh auth login
-    
-    echo -en "\n## create public repo on GitHub\n"
-    git init &>/dev/null
-    gh repo create {{ cookiecutter.github_public_repo }} -y --public --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
-    rm -rf .git
+echo -en "\n## log in to github\n"
+gh auth login
 
-    echo -en "\n## create private repo on GitHub\n"
-    git init &>/dev/null 
-    gh repo create {{ cookiecutter.github_private_repo }} -y --private --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
-    rm -rf .git
+echo -en "\n## create public repo on GitHub\n"
+git init &>/dev/null
+gh repo create {{ cookiecutter.github_public_repo }} -y --public --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
+rm -rf .git
 
-    stty -echo
-    printf "Enter GitHub Personal Access Token: "
-    read MY_GITHUB_TOKEN
-    printf "\n"
+echo -en "\n## create private repo on GitHub\n"
+git init &>/dev/null 
+gh repo create {{ cookiecutter.github_private_repo }} -y --private --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
+rm -rf .git
 
-    printf "Enter DockerHub Access Token: "
-    read DOCKERHUB_ACCESS_TOKEN
-    printf "\n"
+echo -en "\n## create dual repostiory structure\n"
+echo -en "\ninitialize git repository\n"
+git init
 
-    stty echo
-    printf "\n"
+echo -en "\nadd public/private reomotes\n"
+git remote add public-repo https://github.com/{{ cookiecutter.github_public_repo }}.git
+git remote add private-repo https://github.com/{{ cookiecutter.github_private_repo }}.git
 
-fi
+echo -en "\ncreate/push public repository structure\n"
+echo "# {{ cookiecutter.class }} ({{ cookiecutter.term }})" >> README.md
+git add README.md
+git commit -m "first commit"
+git branch -M public
+git push -u public-repo public
 
-# create dual repository structure 
-if [[ $(command -v git) ]]
-then
+echo -en "\ncreate/push private repository structure\n"
+git checkout -b private
 
-    echo -en "\n## create dual repostiory structure\n"
-    echo -en "\ninitialize git repository\n"
-    git init
+echo -en "\n## GitHub and DockerHub tokens\n"
 
-    echo -en "\nadd public/private reomotes\n"
-    git remote add public-repo https://github.com/{{ cookiecutter.github_public_repo }}.git
-    git remote add private-repo https://github.com/{{ cookiecutter.github_private_repo }}.git
+stty -echo
+printf "GitHub personal access token is needed to access private repositories.\n"
+printf "Create one by following directions found here:\n"
+printf "https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token\n"
+printf "Enter GitHub Personal Access Token: "
+read MY_GITHUB_TOKEN
+printf "\n\n"
 
-    echo -en "\ncreate/push public repository structure\n"
-    echo "# {{ cookiecutter.class }} ({{ cookiecutter.term }})" >> README.md
-    git add README.md
-    git commit -m "first commit"
-    git branch -M public
-    git push -u public-repo public
+printf "DockerHub access token is needed to upload Jupyter notebook docker images.\n"
+printf "Create one by following directions found here:\n"
+printf "https://docs.docker.com/docker-hub/access-tokens\n"
+printf "Enter dockerHub access token: "
+read DOCKERHUB_ACCESS_TOKEN
+printf "\n\n"
 
-    echo -en "\ncreate/push private repository structure\n"
-    git checkout -b private
-    git push -u private-repo private
+printf "DockerHub access token is needed to upload Gradescope grader docker images.\n"
+printf "Gradescope grader images are stored in a private repository\n"
+printf "Enter grader image repository access token: "
+read GRADER_ACCESS_TOKEN
+printf "\n\n"
+stty echo
 
-    gh secret set MY_GITHUB_TOKEN -b"${MY_GITHUB_TOKEN}"
-    gh secret set DOCKER_USERNAME -b"{{ cookiecutter.dockerhub_username }}"
-    gh secret set DOCKER_PASSWORD -b"${DOCKERHUB_ACCESS_TOKEN}"
+echo -en "\nadding tokens to GitHub secrets\n"
+gh secret set MY_GITHUB_TOKEN -b"${MY_GITHUB_TOKEN}"
+gh secret set DOCKER_USERNAME -b"{{ cookiecutter.dockerhub_username }}"
+gh secret set DOCKER_PASSWORD -b"${DOCKERHUB_ACCESS_TOKEN}"
+gh secret set GRADER_PASSWORD -b"${GRADER_ACCESS_TOKEN}"
 
-    # stty -echo
-    # printf "Password: "
-    # read PASSWORD
-    # stty echo
-    # printf "\n"
+echo -en "\npushing grader files to private\n"
+git add .
+git push -u private-repo private
 
-    # gh secret set DOCKER_PASSWORD -b'asdfasdf'
+echo -en "\npushing again to docker builds notebook docker image)\n"
+git checkout -b docker
+git push -u private-repo docker
 
-fi
