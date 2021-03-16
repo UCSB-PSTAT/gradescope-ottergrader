@@ -24,6 +24,22 @@ then
     gh repo create {{ cookiecutter.github_private_repo }} -y --private --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
     rm -rf .git
 
+    stty -echo
+    printf "Enter GitHub Personal Access Token: "
+    read MY_GITHUB_TOKEN
+    printf "\n"
+
+    printf "Enter DockerHub Access Token: "
+    read DOCKERHUB_ACCESS_TOKEN
+    printf "\n"
+
+    stty echo
+    printf "\n"
+
+    gh secret set MY_GITHUB_TOKEN -b"${MY_GITHUB_TOKEN}"
+    gh secret set DOCKER_USERNAME -b"{{ cookiecutter.dockerhub_username }}"
+    gh secret set DOCKER_PASSWORD -b"${DOCKERHUB_ACCESS_TOKEN}"
+
 fi
 
 # create dual repository structure 

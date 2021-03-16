@@ -8,6 +8,7 @@ on:
 
 env:
   GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
+  MY_GITHUB_TOKEN: {{ "${{ secrets.MY_GITHUB_TOKEN }}" }}
 
 jobs:
 
@@ -33,7 +34,7 @@ jobs:
           repo: "{{ cookiecutter.github_private_repo }}"
           version: "latest"
           file: "environment.yml"
-          token: "{{ cookiecutter.github_personal_access_token }}"
+          token: "${MY_GITHUB_TOKEN}"
 
       - run: |
           sudo apt-get update && sudo apt-get install -y zip unzip
