@@ -3,6 +3,8 @@
   "term": "Fall 2021",
   "project_slug": "{{ cookiecutter.class | slugify }}-{{ cookiecutter.term | slugify }}",
   "github_username": "you",
+  "github_fullname": "Your Name",
+  "github_email": "you@email.com",
   "github_public_repo": "{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}",
   "github_private_repo": "{{ cookiecutter.github_public_repo}}-private",
   "dockerhub_username": "you",

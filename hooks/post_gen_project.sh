@@ -10,6 +10,10 @@ set -e
 echo -en "\n## log in to github\n"
 gh auth login
 
+echo -en "\n## set git user information\n"
+git config --global user.email "{{ cookiecutter.github_email }}"
+git config --global user.name "{{ cookiecutter.github_fullname }}"
+
 echo -en "\n## create public repo on GitHub\n"
 git init &>/dev/null
 gh repo create {{ cookiecutter.github_public_repo }} -y --public --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
