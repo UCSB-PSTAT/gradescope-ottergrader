@@ -27,10 +27,5 @@ RUN pip install \
         jupyter-rsession-proxy==1.2.0 && \
     jupyter labextension install @jupyterlab/server-proxy
 
-# Make sure the contents of our repo are in ${HOME}
-COPY . ${HOME}
-USER root
-RUN chown -R ${NB_UID} ${HOME}
-USER ${NB_USER}
 
 
