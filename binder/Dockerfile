@@ -19,6 +19,7 @@ RUN \
 USER ${NB_USER}
 
 RUN pip install \
+        otter-grader==2.1.3 \
         jupyterlab-git==0.23.3 \
         cookiecutter==1.7.2 && \
     \
