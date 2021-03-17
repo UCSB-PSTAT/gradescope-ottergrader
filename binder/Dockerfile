@@ -19,7 +19,6 @@ RUN \
 USER ${NB_USER}
 
 RUN pip install \
-        jupyterlab-git==0.23.3 \
         cookiecutter==1.7.2 && \
     \
     pip install jupyterlab_latex==2.0.0 && \
