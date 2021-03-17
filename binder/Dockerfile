@@ -22,11 +22,6 @@ RUN pip install \
         jupyterlab-git==0.23.3 \
         cookiecutter==1.7.2 && \
     \
-    pip install \
-        jupyter-server-proxy==1.6.0 \
-        jupyter-rsession-proxy==1.2.0 && \
-    jupyter labextension install @jupyterlab/server-proxy && \
-    \
     pip install jupyterlab_latex==2.0.0 && \
     jupyter labextension install @jupyterlab/latex
 
