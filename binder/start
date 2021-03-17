@@ -2,4 +2,6 @@
 
 export PATH=~/gh_1.7.0_linux_amd64/bin:$PATH
 
+rm -rf .git hooks images binder README.md README.Rmd cookiecutter.json "{{cookiecutter.project_slug}}" 
+
 exec "$@"
