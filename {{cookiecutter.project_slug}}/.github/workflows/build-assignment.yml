@@ -1,0 +1,86 @@
+name: Build grader image
+
+on:
+  push:
+    branches:
+      - 'assignment/**'
+      - 'lab/**'
+
+env:
+  GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
+  MY_GITHUB_TOKEN: {{ "${{ secrets.MY_GITHUB_TOKEN }}" }}
+
+jobs:
+
+  build-grader:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: |
+          echo "IMAGE=ucsb/gradescope-graders" >> $GITHUB_ENV
+          echo "BRANCH=$( echo ${GITHUB_REF} | cut -d/ -f3- )" >> $GITHUB_ENV
+          echo "TYPE=$( echo ${GITHUB_REF} | cut -d/ -f3 )" >> $GITHUB_ENV
+          echo "NUM=$( echo ${GITHUB_REF} | cut -d/ -f4 )" >> $GITHUB_ENV
+
+      - run: |
+          echo "TAG=${TYPE::2}${NUM}-${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+
+      - name: Latest environment.yml
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "{{ cookiecutter.github_private_repo }}"
+          version: "latest"
+          file: "environment.yml"
+          token: {{ "${{ secrets.MY_GITHUB_TOKEN }}" }}
+
+      - run: |
+          sudo apt-get update && sudo apt-get install -y zip unzip
+          zip "${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip" environment.yml
+
+      - name: Gradescope Dockerfile
+        run: |
+          mkdir -p build
+          cat << EOF > build/Dockerfile
+          FROM gradescope/auto-builds:ubuntu-20.04
+
+          RUN apt-get update && \
+              apt-get install -y curl unzip dos2unix && \
+              apt-get clean && \
+              rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+          RUN mkdir -p /autograder/source
+
+          COPY ${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip /tmp/autograder.zip
+
+          RUN unzip -d /autograder/source /tmp/autograder.zip
+
+          RUN cp /autograder/source/run_autograder /autograder/run_autograder
+
+          RUN dos2unix /autograder/run_autograder /autograder/source/setup.sh
+
+          RUN chmod +x /autograder/run_autograder
+
+          RUN apt-get update && \
+              bash /autograder/source/setup.sh && \
+              apt-get clean && \
+              rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+          EOF
+
+      - uses: docker/login-action@v1
+        with:
+          username: syoh
+          password: {{ "${{ secrets.GRADER_PASSWORD }}" }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: build/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: {{ "${{ env.IMAGE }}:${{ env.TAG }}" }}
+
+      - name: Grader Docker image
+        run: |
+          echo "Grader image: ${IMAGE}:${TAG}"

@@ -1,0 +1,11 @@
+ #!/bin/bash
+ 
+set -ex
+
+wget https://github.com/cli/cli/releases/download/v1.7.0/gh_1.7.0_linux_amd64.tar.gz && \
+    tar xvzf gh_1.7.0_linux_amd64.tar.gz && \
+    rm -f gh_1.7.0_linux_amd64.tar.gz
+    
+rm -rf .git hooks images README.md README.Rmd cookiecutter.json "{{cookiecutter.project_slug}}" 
+
+echo "done!"
