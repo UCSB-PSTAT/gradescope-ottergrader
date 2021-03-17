@@ -19,7 +19,13 @@ RUN \
 USER ${NB_USER}
 
 RUN pip install \
-        cookiecutter==1.7.2
+        jupyterlab-git==0.23.3 \
+        cookiecutter==1.7.2 && \
+    \
+    pip install \
+        jupyter-server-proxy==1.6.0 \
+        jupyter-rsession-proxy==1.2.0 && \
+    jupyter labextension install @jupyterlab/server-proxy
 
 # Make sure the contents of our repo are in ${HOME}
 COPY . ${HOME}
