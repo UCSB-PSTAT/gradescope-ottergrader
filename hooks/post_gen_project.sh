@@ -69,8 +69,8 @@ echo -en "\n"
 echo -en "\n# adding tokens to GitHub secrets\n"
 gh secret set MY_GITHUB_TOKEN -b"${MY_GITHUB_TOKEN}"
 gh secret set DOCKER_USERNAME -b"{{ cookiecutter.dockerhub_username }}"
-gh secret set DOCKER_PASSWORD -b"${DOCKERHUB_ACCESS_TOKEN}"
-gh secret set GRADER_PASSWORD -b"${GRADER_ACCESS_TOKEN}"
+gh secret set DOCKER_ACCESS_TOKEN -b"${DOCKERHUB_ACCESS_TOKEN}"
+gh secret set GRADER_ACCESS_TOKEN -b"${GRADER_ACCESS_TOKEN}"
 
 echo -en "\n# pushing grader files to private\n"
 git add .
