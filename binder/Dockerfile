@@ -27,5 +27,9 @@ RUN pip install \
         jupyter-rsession-proxy==1.2.0 && \
     jupyter labextension install @jupyterlab/server-proxy
 
-
-
+RUN wget https://github.com/cli/cli/releases/download/v1.7.0/gh_1.7.0_linux_amd64.tar.gz && \
+    tar xvzf gh_1.7.0_linux_amd64.tar.gz && \
+    mv gh_1.7.0_linux_amd64 gh && \
+    rm -f gh_1.7.0_linux_amd64.tar.gz
+    
+ENV PATH=~/gh/bin:$PATH
