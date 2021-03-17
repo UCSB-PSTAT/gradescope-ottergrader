@@ -19,10 +19,7 @@ RUN \
 USER ${NB_USER}
 
 RUN pip install \
-        cookiecutter==1.7.2 && \
-    \
-    pip install jupyterlab_latex==2.0.0 && \
-    jupyter labextension install @jupyterlab/latex
+        cookiecutter==1.7.2
 
 # Make sure the contents of our repo are in ${HOME}
 COPY . ${HOME}
