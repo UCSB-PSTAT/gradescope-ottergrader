@@ -22,7 +22,7 @@ jobs:
           echo "NUM=$( echo ${GITHUB_REF} | cut -d/ -f4 )" >> $GITHUB_ENV
 
       - run: |
-          echo "TAG=${TYPE::2}${NUM}-${GITHUB_SHA::7}" >> $GITHUB_ENV
+          echo "TAG={{ cookiecutter.project_slug }}-${TYPE::2}${NUM}-${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v2
 
