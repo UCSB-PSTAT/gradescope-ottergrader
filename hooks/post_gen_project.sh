@@ -76,8 +76,3 @@ echo -en "\n# pushing grader files to private\n"
 git add .
 git commit -m"initial grader files"
 git push -u private-repo private
-
-echo -en "\n# pushing again to docker builds notebook docker image\n"
-git checkout -b docker
-git push -u private-repo docker
-
