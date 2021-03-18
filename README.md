@@ -12,7 +12,7 @@ This template repository structure makes autograding easier. The components assu
 - DockerHub access token
 - `ucsbgrader` access token (request from Sang)
 
-![image](https://user-images.githubusercontent.com/1441512/111580418-b7878480-8774-11eb-9668-e7938b0754ac.png)
+[![image](https://user-images.githubusercontent.com/1441512/111580418-b7878480-8774-11eb-9668-e7938b0754ac.png)](https://youtu.be/D9ursARpQJk)
 
 ## Steps:
 - Launch Binder session [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/UCSB-PSTAT/gradescope-ottergrader/main?urlpath=lab)
