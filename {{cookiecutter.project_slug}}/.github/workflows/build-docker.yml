@@ -1,0 +1,82 @@
+name: Build notebook image
+
+on: 
+  push:
+    branches:
+      - docker
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+env:
+  GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
+
+jobs:
+
+  build-notebook-image:
+
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Set image name (1)
+        run: |
+          echo "image_name={{ cookiecutter.dockerhub_repo }}" >> $GITHUB_ENV
+          echo "$( echo {{ '${{ github.sha }}' }} | cut -c1-7 )"
+          echo "short_sha=$( echo {{ '${{ github.sha }}' }} | cut -c1-7 )" >> $GITHUB_ENV
+
+      - name: Set image name (2)
+        run: |
+          echo "full_tag={{ '${{ env.image_name }}:${{ env.short_sha }}' }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+
+      - uses: docker/login-action@v1
+        with:
+          username: {{ "${{ secrets.DOCKER_USERNAME }}" }}
+          password: {{ "${{ secrets.DOCKER_ACCESS_TOKEN }}" }}
+
+      - uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: {{ "${{ env.full_tag }}" }}
+
+      - name: Export conda environment for building Gradescope image
+        run: |
+          docker run -i --rm {{ "${{ env.full_tag }}" }} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-env/' | grep -v '^prefix\|gcc_impl\|gxx_impl' > environment.yml
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: conda-package-lists
+          path: environment.yml
+
+  create-release:
+
+    needs: build-notebook-image
+    if: {{ "${{ contains(github.ref, 'tags/v') }}" }}
+    runs-on: ubuntu-20.04
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/create-release@v1
+        id: create_release
+        with:
+          tag_name: {{ "${{ github.ref }}" }}
+          release_name: Release {{ "${{ github.ref }}" }}
+          body: |
+            Changes in this Release
+            * Update all actions
+          draft: false
+          prerelease: false
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: conda-package-lists
+
+      - uses: actions/upload-release-asset@v1
+        with:
+          upload_url: {{ "${{ steps.create_release.outputs.upload_url }}" }}
+          asset_path: ./environment.yml
+          asset_name: environment.yml
+          asset_content_type: text/plain
