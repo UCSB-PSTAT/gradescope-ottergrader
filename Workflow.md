@@ -6,15 +6,14 @@ Workflow Diagram
 
 ![workflow-diagram](images/workflow-diagram.png)
 
--   Local repository has two branches:
-    -   private named as `private-repo`
-    -   public named as `public-repo`
--   There are two *separate* GitHub repositories:
-    -   private named as `[coursename]-[quarter]-private`
-    -   public named as `[coursename]-[quarter]`
--   The local private branch, `private-repo`, is *only* associated with
-    the private repository, and `public-repo` is *only* associated with
-    the public repository to avoid confusion.
+-   Local repository has two branches: `private` and `public`
+
+-   There are two *separate* remote repositories: `private-repo` and
+    `public-repo`
+
+-   The local branch, `private`, is *only* associated with
+    `private-repo`, and the local branch `public` is *only* associated
+    with `public-repo` to avoid confusion.
 
 Step-by-step Workflow
 =====================
@@ -63,16 +62,15 @@ where `.` indicates to create all outputs in the current directory.
 ### 3. Update gradescope image
 
 Once you see `All tests passed!`, you can push all files in
-`autograder/` and `student/` directories to the GitHub private
-repository. Note that you need to first checkout a new branch
-`assignment/[number]` or `lab/[number]`. This specific name of branch is
-required to trigger an appropriate action on GitHub to generate a
-gradescope image.
+`autograder/` and `student/` directories to `private-repo`. Note that
+you need to first checkout a new branch `assignment/[number]` or
+`lab/[number]`. This specific name of branch is required to trigger an
+appropriate action on GitHub to generate a gradescope image.
 
     # checkout a new branch called assignment/[number]
     git checkout -b assignment/[number]
 
-    # push necessary files to a specific branch of private repository
+    # push necessary files to a specific branch of private-repo
     git add autograder/ student/
     git commit -m '[commit message]'
     git push -u private-repo assignment/[number]
@@ -90,23 +88,23 @@ finishes the job of setting up an autograder.
 
 ### 4. Release student-template to students
 
-Now we release student-template to public repository.
+Now we release student-template to `public-repo`.
 
     # move over to public branch
     git checkout public
 
-    # bring over student-template to public branch and push it to public repository
+    # bring over student-template to public branch and push it to public-repo
     git checkout assignment/[number] assignments/assignment[number]/student/
     git commit -m "release assignment1"
     git push
 
 ### 5. Merge branch to master in private repository
 
-At last, we merge the assignment/\[number\] branch to the master branch,
-`private`.
+At last, we merge the `assignment/[number]` branch to the default
+branch.
 
     # move over to private branch
     git checkout private
 
-    # merge assignment/[number] to master
+    # merge assignment/[number] to the default branch
     git merge assignment/[number]
