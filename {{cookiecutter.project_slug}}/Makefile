@@ -38,3 +38,12 @@ test: ## Make a test run against the latest image
 
 test-env: ## Make a test environment by installing test dependencies with pip
 	pip install -r tests/requirements.txt
+
+repo-structure: ## Create public/private repository pair 
+	git remote add private-repo https://github.com/{{ cookiecutter.github_private_repo }}
+	git remote add public-repo https://github.com/{{ cookiecutter.github_public_repo }}
+	git remote rm origin
+	git pull --set-upstream private-repo private
+	git checkout --orphan public
+	git pull --set-upstream public-repo public
+	git checkout private
