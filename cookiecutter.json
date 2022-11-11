@@ -1,9 +1,9 @@
 {
   "class": "PSTAT 234",
-  "term": "Spring 2021",
+  "term": "Spring2021",
   "project_slug": "{{ cookiecutter.class | slugify }}-{{ cookiecutter.term | slugify }}",
   "github_public_repo": "username/{{ cookiecutter.project_slug }}",
-  "github_private_repo": "{{ cookiecutter.github_public_repo}}-private",
+  "github_private_repo": "{{ cookiecutter.github_public_repo}}-Private",
   "dockerhub_username": "you",
   "dockerhub_repo": "{{ cookiecutter.dockerhub_username }}/{{ cookiecutter.project_slug | lower }}",
   "base_jupyter_notebook_image": "jupyter/scipy-notebook:aec555e49be6"

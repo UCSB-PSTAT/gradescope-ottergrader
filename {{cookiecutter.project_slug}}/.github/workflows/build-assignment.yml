@@ -35,8 +35,12 @@ jobs:
           token: {{ "${{ secrets.MY_GITHUB_TOKEN }}" }}
 
       - run: |
+          pwd
+          ls -alh
           sudo apt-get update && sudo apt-get install -y zip unzip
-          zip "${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip" environment.yml
+          cp otter-grader-template/* .
+          zip -d "${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip" environment.yml requirements.txt
+          zip "${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip" setup.sh run_autograder
 
       - name: Gradescope Dockerfile
         run: |
@@ -48,6 +52,8 @@ jobs:
               apt-get install -y curl unzip dos2unix && \
               apt-get clean && \
               rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+          COPY --from={{ cookiecutter.dockerhub_repo }}:running /opt/conda /opt/conda
 
           RUN mkdir -p /autograder/source
 
@@ -61,10 +67,11 @@ jobs:
 
           RUN chmod +x /autograder/run_autograder
 
-          RUN apt-get update && \
-              bash /autograder/source/setup.sh && \
-              apt-get clean && \
-              rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+          ENV BASE_IMAGE ucbdsinfra/otter-grader
+
+          RUN mkdir /autograder/results
+
+          RUN /opt/conda/bin/conda init --all
           EOF
 
       - uses: docker/login-action@v1

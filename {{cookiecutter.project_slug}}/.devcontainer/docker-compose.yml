@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  prod:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    image: {{ cookiecutter.dockerhub_repo }}:${TAG:-latest}
+
+    volumes:
+      - ..:/workspaces/Fall2022-Private
+
+    command: 
+      - jupyter
+      - server 
+      - --NotebookApp.ip='127.0.0.1'
+      - --ServerApp.disable_check_xsrf=True
+      - --NotebookApp.token=''
+      - --NotebookApp.password=''
+  dev:
+
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+
+    image: {{ cookiecutter.dockerhub_repo }}-dev:${TAG:-latest}
+
+    environment:
+      GRANT_SUDO: 'yes'
+
+    volumes:
+      - ..:/workspaces/Fall2022-Private
+
+    # command: 
+    #   - jupyter
+    #   - server 
+    #   - --NotebookApp.ip='127.0.0.1'
+    #   - --ServerApp.disable_check_xsrf=True
+    #   - --NotebookApp.token=''
+    #   - --NotebookApp.password=''
