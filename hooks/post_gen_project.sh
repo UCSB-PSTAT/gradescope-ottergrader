@@ -21,11 +21,11 @@ git config --global user.name "${GITHUB_NAME}"
 
 echo -en "\n## create repositories GitHub\n"
 git init &>/dev/null
-gh repo create {{ cookiecutter.github_public_repo }} -y --public --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
+gh repo create {{ cookiecutter.github_public_repo }} --public --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
 rm -rf .git
 
 git init &>/dev/null 
-gh repo create {{ cookiecutter.github_private_repo }} -y --private --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
+gh repo create {{ cookiecutter.github_private_repo }} --private --description "{{ cookiecutter.class }} ({{ cookiecutter.term }})"
 rm -rf .git
 
 echo -en "\n## initialize git repository\n"
