@@ -1,4 +1,4 @@
-FROM jupyter/base-notebook:ubuntu-22.04
+FROM jupyter/minimal-notebook:ubuntu-22.04
 
 USER ${NB_USER}
 
