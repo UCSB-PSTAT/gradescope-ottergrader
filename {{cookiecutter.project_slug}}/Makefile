@@ -40,8 +40,8 @@ test-env: ## Make a test environment by installing test dependencies with pip
 	pip install -r tests/requirements.txt
 
 repo-structure: ## Create public/private repository pair 
-	git remote add private-repo {{ cookiecutter.github_private_repo }}
-	git remote add public-repo {{ cookiecutter.github_public_repo }}
+	git remote add private-repo https://github.com/{{ cookiecutter.github_private_repo }}
+	git remote add public-repo https://github.com/{{ cookiecutter.github_public_repo }}
 	git remote rm origin
 	git fetch private-repo
 	git branch -u private-repo/private
